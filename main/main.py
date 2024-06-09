@@ -1,7 +1,8 @@
 # imports
-import random
 import tkinter as tk
 from tkinter import font
+from typing import NamedTuple
+from itertools import cycle
 
 # Test code
 '''
@@ -11,7 +12,37 @@ print(name)
 '''
 
 
-# Class
+# Player class
+class Player(NamedTuple):
+    label: str
+    color: str
+
+
+# Move class and its logic
+class Move(NamedTuple):
+    row: int
+    col: int
+    label: str = ""
+
+BOARD_SIZE = 3
+DEFAULT_PLAYERS = (
+    Player(label='X', color='red'),
+    Player(label='O', color='yellow'),
+)
+
+# Game class here
+class TicTacToeGame:
+    def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
+        self.players = cycle(players)
+        self.board_size = board_size
+        self.current_player = next(self.players)
+        self.winner_combo = []
+        self._current_moves = []
+        self._has_winner = False
+        self._winning_conditions = []
+        self._setup_board()
+
+# TicTacToeBoard class here - bulk of the interface
 class TicTacToeBoard(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -56,7 +87,7 @@ class TicTacToeBoard(tk.Tk):
                 )
 
 
-# Main code here below
+# Code initialization
 def main():
     board = TicTacToeBoard()
     board.mainloop()
