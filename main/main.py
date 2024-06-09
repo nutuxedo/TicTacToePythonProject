@@ -46,7 +46,7 @@ class TicTacToeGame:
 class TicTacToeBoard(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title('Tic-Tac-Toe Game')
+        self.title('oTicToe') # The window title of the application
         self._cells = {}
         self._create_board_display()
         self._create_board_grid()
