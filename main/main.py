@@ -1,7 +1,10 @@
-# This should be something....
 import random
+# import random
 
-
-print ("Hello World")
+# Test code
+print("Hello World")
 name = input()
 print(name)
+
+# Main code here below
+
