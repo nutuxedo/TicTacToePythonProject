@@ -58,7 +58,7 @@ class TicTacToeBoard(tk.Tk):
 
 # Main code here below
 def main():
-    board = TicTacToeBoard
+    board = TicTacToeBoard()
     board.mainloop()
 
 
