@@ -4,6 +4,11 @@ from tkinter import font
 from typing import NamedTuple
 from itertools import cycle
 
+'''
+Thanks to this website:
+https://realpython.com/tic-tac-toe-python/#step-3-process-the-players-moves-on-the-games-logic
+this is where all the code is from
+'''
 
 # Player class
 class Player(NamedTuple):
@@ -28,9 +33,9 @@ DEFAULT_PLAYERS = (
 # Game class here
 class TicTacToeGame:
     def __init__(self, players=DEFAULT_PLAYERS, board_size=BOARD_SIZE):
-        self.players = cycle(players)
+        self._players = cycle(players)
         self.board_size = board_size
-        self.current_player = next(self.players)
+        self.current_player = next(self._players)
         self.winner_combo = []
         self._current_moves = []
         self._has_winner = False
@@ -82,10 +87,11 @@ class TicTacToeGame:
         played_moves = (
             move.label for row in self._current_moves for move in row
         )
-        return no_winner and all (played_moves)
+        return no_winner and all(played_moves)
 
     def has_winner(self):
         return self._has_winner
+
 
 # TicTacToeBoard class here - bulk of the interface
 class TicTacToeBoard(tk.Tk):
@@ -124,6 +130,7 @@ class TicTacToeBoard(tk.Tk):
                     highlightbackground="lightblue",
                 )
                 self._cells[button] = (row, col)
+                button.bind("<ButtonPress-1>", self.play)
                 button.grid(
                     row=row,
                     column=col,
@@ -132,10 +139,43 @@ class TicTacToeBoard(tk.Tk):
                     sticky='nsew'
                 )
 
+    def play(self, event):
+        clicked_button = event.widget
+        row, col = self._cells[clicked_button]
+        move = Move(row, col, self._game.current_player.label)
+        if self._game.is_valid_move(move):
+            self._update_button(clicked_button)
+            self._game.process_move(move)
+            if self._game.is_tied():
+                self._update_display(msg='Tied game!', color='red')
+            elif self._game.has_winner():
+                self._highlight_cells()
+                msg = f'Player "{self._game.current_player.label}" won!'
+                color = self._game.current_player.color
+                self._update_display(msg, color)
+            else:
+                self._game.toggle_player()
+                msg = f"{self._game.current_player.label}'s turn"
+                self._update_display(msg)
+
+    def _update_button(self, clicked_button):
+        clicked_button.config(text=self._game.current_player.label)
+        clicked_button.config(fg=self._game.current_player.color)
+
+    def _update_display(self, msg, color="black"):
+        self.display['text'] = msg
+        self.display['fg'] = color
+
+    def _highlight_cells(self):
+        for button, coordinates in self._cells.items():
+            if coordinates in self._game.winner_combo:
+                button.config(highlightbackground='red')
+
 
 # Code initialization
 def main():
-    board = TicTacToeBoard()
+    game = TicTacToeGame()
+    board = TicTacToeBoard(game)
     board.mainloop()
 
 
